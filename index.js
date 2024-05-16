@@ -19,14 +19,8 @@ const bot = new Client(TOKEN, {
   ],
 });
 
-bot.on('messageCreate', (message) => {
-  const ignoreSelf = message.author.id === bot.user.id;
-  const ignoreBots = message.author.bot;
-  if (ignoreSelf || ignoreBots) return undefined;
-  if (!message.content.includes('https://')) return undefined;
-
-  return preview(message, bot);
-});
+bot.on('messageCreate', onMessage);
+bot.on('messageUpdate', onMessage)
 
 bot.on('error', console.error);
 bot.on('ready', () => {
@@ -34,3 +28,16 @@ bot.on('ready', () => {
 });
 
 bot.connect();
+
+/**
+ * @param {import('eris').Message} message
+ */
+function onMessage(message) {
+  if (!message.author) return;
+  const ignoreSelf = message.author.id === bot.user.id;
+  const ignoreBots = message.author.bot;
+  if (ignoreSelf || ignoreBots) return undefined;
+  if (!message.content?.includes('https://')) return undefined;
+
+  return preview(message, bot);
+}
