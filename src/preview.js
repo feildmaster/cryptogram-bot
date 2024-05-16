@@ -26,7 +26,14 @@ export default async function preview(message, bot) {
     const file = await process(url);
     if (!file) return;
     const isUrl = typeof file === 'string';
-    const content = isUrl ? file : undefined;
+    // const content = isUrl ? file : undefined;
+    const content = {
+      embed: {
+        image: {
+          url: isUrl ? file : 'attachment://preview.png',
+        },
+      },
+    };
     const fileContent = !isUrl ? {
       name: 'preview.png',
       file,
