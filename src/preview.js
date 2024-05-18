@@ -3,6 +3,7 @@ import cluster from './cluster.js';
 const URL_REGEX = /\b(https?:\/\/\S+)/g;
 
 const whitelist = [
+  'cryptogram.feildmaster.com',
   'cryptogram-game.web.app',
 ];
 
