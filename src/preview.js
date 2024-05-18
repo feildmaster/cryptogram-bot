@@ -13,22 +13,32 @@ const cache = new Map();
  * @param {import("eris").Client} bot
  */
 export default async function preview(message, bot) {
+  /**
+   * @type {Set<{ spoiler: boolean, url: string }>}
+   */
   const urls = new Set();
 
   for (const [, uri] of message.content.matchAll(URL_REGEX)) {
     if (uri.includes('.js?')) continue; // crude errorlog detection
-    const url = new URL(uri);
+    const spoiler = uri.endsWith('||');
+    const url = new URL(spoiler ? uri.substring(0, uri.length - 2) : uri);
     if (!whitelist.includes(url.host)) continue;
-    urls.add(`${url}`);
+    urls.add({
+      spoiler,
+      url: `${url}`,
+    });
   }
 
-  await Promise.all([...urls].map(async (url) => {
+  await Promise.all([...urls].map(async ({
+    spoiler,
+    url,
+  }) => {
     const file = await process(url);
     if (!file) return;
     const isUrl = typeof file === 'string';
     const content = isUrl ? file : undefined;
     const fileContent = !isUrl ? {
-      name: 'preview.png',
+      name: `${spoiler ? 'SPOILER_' : ''}preview.png`,
       file,
     } : undefined;
     const msg = await bot.createMessage(message.channel.id, content, fileContent);
