@@ -19,9 +19,6 @@ await cluster.task(async ({ page, data: url }) => {
     });
   });
   await page.goto(url);
-  await page.waitForSelector('.board[data-ready]', {
-    timeout: 5000,
-  });
 
   const el = await page.$('body');
   return el.screenshot({
