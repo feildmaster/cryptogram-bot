@@ -1,0 +1,1 @@
+export const GUILD = '826371759800320000';

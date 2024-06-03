@@ -2,7 +2,7 @@ import cluster from './cluster.js';
 
 const URL_REGEX = /\b(https?:\/\/\S+)/g;
 
-const whitelist = [
+export const whitelist = [
   'cryptogram.feildmaster.com',
   'cryptogram-game.web.app',
 ];
@@ -54,11 +54,19 @@ export default async function preview(message, bot) {
   }
 }
 
-async function process(url) {
+export async function process(url) {
   const cached = cache.get(url);
   if (cached) {
+    cache.delete(url);
+    cache.set(url, cached);
     return cached;
   }
-  return cluster.execute(url)
-    .catch((err) => console.error('Error processing url:', url, '\n', err));
+  try {
+    const file = await cluster.execute(url);
+    cache.set(url, file);
+    return file;
+  } catch (err) {
+    console.error('Error processing url:', url, '\n', err)
+  }
+  return undefined;
 }
